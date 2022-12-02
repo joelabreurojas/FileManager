@@ -3,7 +3,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import pendulum
 
@@ -21,9 +21,6 @@ def decompose_file(file: str) -> Tuple[str, str]:
 
 
 def format_file(file: File) -> File:
-    if not isinstance(file.extension, str):
-        return file
-
     file_dict = (file)._asdict()
 
     file_dict["extension"] = file.extension.replace(".", "").upper()
@@ -46,9 +43,6 @@ def validate_file(file: File) -> None:
             - The first digit cannot be a number
             """
         )
-
-    if not isinstance(file.extension, str):
-        raise FileNotValid(f"The extension '{file.extension}' is not valid")
 
     if not __valid_date(file.expiration):
         raise FileNotValid(f"The expiration '{file.expiration}' is not valid")
@@ -78,11 +72,11 @@ def generate_dates() -> Tuple[List[str], List[str], List[str]]:
     return year, month, day
 
 
-def expired_file(file: File) -> bool:
-    if not file.expiration:
+def expired_file(expiration: str) -> bool:
+    if not expiration:
         return False
 
-    date = file.expiration.split("/")
+    date = expiration.split("/")
 
     year = int(date[0])
     month = int(date[1])
@@ -151,20 +145,18 @@ def __format_date(format: str) -> str:
     return dt.format(format)  # type: ignore
 
 
-def __valid_text(text: Optional[str]) -> bool:
-    if not isinstance(text, str):
-        return False
-
+def __valid_text(text: str) -> bool:
     regex = r"^[a-z_][a-z_0-9]*$"
 
     return bool(re.search(regex, text))
 
 
-def __valid_date(date: Optional[str]) -> bool:
-    if not isinstance(date, str) or not date:
+def __valid_date(date_: str) -> bool:
+    if not date_:
         return True
 
-    return bool(8 <= len(date) <= 10)
+    date = date_.split("/")
+    return bool(date[0] and date[1] and date[2])
 
 
 def __folder_name(path: Path) -> Path:

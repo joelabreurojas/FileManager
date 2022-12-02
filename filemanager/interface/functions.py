@@ -22,7 +22,7 @@ def update_table(table: ttk.Treeview, data: List[File]) -> None:
         table.delete(child)
 
     for file in data:
-        tag = "gray" if util.expired_file(File(expiration=file.expiration)) else "red"
+        tag = "gray" if util.expired_file(file.expiration) else "red"
 
         table.insert(
             parent="",
