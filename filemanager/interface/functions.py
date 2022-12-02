@@ -45,22 +45,22 @@ def update_table(table: ttk.Treeview, data: List[File]) -> None:
     sort_column(table, "description")
 
 
-def sort_column(table: ttk.Treeview, column: str, reverse: bool = False) -> None:
-    data = [(table.set(k, column).lower(), k) for k in table.get_children("")]
+def sort_column(table: ttk.Treeview, column_: str, reverse: bool = False) -> None:
+    data = [(table.set(k, column_).lower(), k) for k in table.get_children("")]
 
     data.sort(key=lambda t: t[0], reverse=reverse)
 
     for index, (_, child) in enumerate(data):
         table.move(child, "", index)
 
-    for _column in table["columns"]:
-        table.heading(_column, text=_column.capitalize())
+    for column in table["columns"]:
+        table.heading(column, text=column.capitalize())
 
     reference = "⌄" if reverse else "^"
     table.heading(
-        column,
-        text=f"{column.capitalize()} ({reference})",
-        command=lambda: sort_column(table, column, not reverse),
+        column_,
+        text=f"{column_.capitalize()} ({reference})",
+        command=lambda: sort_column(table, column_, not reverse),
     )
 
 
