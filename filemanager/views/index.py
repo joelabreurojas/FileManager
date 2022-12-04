@@ -301,7 +301,7 @@ class FileManager(ctk.CTk):
         window = EntryWindow()
         window.title("Edit file")
         window.description_entry.insert(0, description)
-        window.label_combobox.insert(0, label)
+        window.label_combobox.set(label)
         window.accept_button.configure(
             command=lambda: [
                 file_controller.update(
