@@ -39,8 +39,8 @@ class EntryWindow(ctk.CTkToplevel):
             )
             element.entry.configure(readonlybackground="#D3D3D3")
 
-        self.label_entry = ctk.CTkEntry(
-            self, width=180, placeholder_text="Keyword, type file, etc..."
+        self.label_combobox = ctk.CTkComboBox(
+            self, width=180, values=["", "Agreements", "Resolutions"]
         )
         self.accept_button = ctk.CTkButton(self, text="Accept")
         self.label = ctk.CTkLabel(self, text="Label - (Optional)")
@@ -54,7 +54,7 @@ class EntryWindow(ctk.CTkToplevel):
         self.year_combobox.grid(row=4, column=0, padx=5)
         self.month_combobox.grid(row=4, column=1)
         self.day_combobox.grid(row=4, column=2, padx=5)
-        self.label_entry.grid(row=4, column=3, sticky="ew", padx=5)
+        self.label_combobox.grid(row=4, column=3, sticky="ew", padx=5)
         self.accept_button.grid(row=5, column=0, columnspan=5, pady=20)
 
 

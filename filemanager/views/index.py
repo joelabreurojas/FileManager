@@ -256,7 +256,7 @@ class FileManager(ctk.CTk):
                         description=window.description_entry.get(),
                         extension=extension,
                         expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
-                        label=window.label_entry.get(),
+                        label=window.label_combobox.get(),
                     )
                 ),
                 util.copy_file(path, f"{window.description_entry.get()}{extension}"),
@@ -299,7 +299,7 @@ class FileManager(ctk.CTk):
         window = EntryWindow()
         window.title("Edit file")
         window.description_entry.insert(0, description)
-        window.label_entry.insert(0, label)
+        window.label_combobox.insert(0, label)
         window.accept_button.configure(
             command=lambda: [
                 file_controller.update(
@@ -308,7 +308,7 @@ class FileManager(ctk.CTk):
                         description=window.description_entry.get(),
                         expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
                         extension=values[3],
-                        label=window.label_entry.get(),
+                        label=window.label_combobox.get(),
                     )
                 ),
                 util.rename_file(
