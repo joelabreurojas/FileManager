@@ -10,6 +10,8 @@ from ..helpers import util
 from ..models.entities import File
 from .toplevels import EntryWindow, NotificationWindow
 
+FAVICON = Path.cwd() / "filemanager" / "static" / "img" / "favicon.ico"
+
 
 class FileManager(ctk.CTk):
     def __init__(self):
@@ -24,7 +26,7 @@ class FileManager(ctk.CTk):
         self.title("File Manager")
         self.geometry(f"{WIDTH}x{HEIGHT}+{int(X)}+{int(Y)}")
         self.minsize(640, 500)
-        self.iconbitmap(r"filemanager\static\img\favicon.ico")
+        self.iconbitmap(FAVICON)
 
         # Frames
         self.background_frame = ctk.CTkFrame(self)
