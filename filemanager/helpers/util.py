@@ -111,6 +111,8 @@ def generate_backup(folder: Optional[str] = None) -> None:
 
     shutil.copytree(source, destiny)
 
+    Path(destiny / "no_delete.jpg").unlink()
+
 
 def __format_date(format: str) -> str:
     dt = pendulum.now()
