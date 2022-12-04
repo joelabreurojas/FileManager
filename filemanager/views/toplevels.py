@@ -1,6 +1,10 @@
+from pathlib import Path
+
 import customtkinter as ctk
 
 from ..helpers import util
+
+FAVICON = Path.cwd() / "filemanager" / "static" / "img" / "favicon.ico"
 
 
 class EntryWindow(ctk.CTkToplevel):
@@ -16,7 +20,7 @@ class EntryWindow(ctk.CTkToplevel):
         self.maxsize(WIDTH, HEIGHT)
         self.minsize(WIDTH, HEIGHT)
         self.geometry(f"{WIDTH}x{HEIGHT}+{int(X)}+{int(Y)}")
-        self.iconbitmap(r"filemanager\static\img\favicon.ico")
+        self.iconbitmap(FAVICON)
 
         self.dates = util.generate_dates()
 
@@ -71,7 +75,7 @@ class NotificationWindow(ctk.CTkToplevel):
         self.maxsize(WIDTH, HEIGHT)
         self.minsize(WIDTH, HEIGHT)
         self.geometry(f"{WIDTH}x{HEIGHT}+{int(X)}+{int(Y)}")
-        self.iconbitmap(r"filemanager\static\img\favicon.ico")
+        self.iconbitmap(FAVICON)
         self.grid_columnconfigure(0, weight=1)
 
         self.label = ctk.CTkLabel(self)
