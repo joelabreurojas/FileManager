@@ -134,7 +134,7 @@ class FileManager(ctk.CTk):
             self.count += 1
 
         # Table section
-        self.table = ttk.Treeview(self.table_frame)
+        self.table = ttk.Treeview(self.table_frame, selectmode="browse")
         self.table.grid(row=0, column=0, sticky="nsew")
         self.table["columns"] = (
             "description",
