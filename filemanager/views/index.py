@@ -138,13 +138,7 @@ class FileManager(ctk.CTk):
         # Table section
         self.table = ttk.Treeview(self.table_frame, selectmode="browse")
         self.table.grid(row=0, column=0, sticky="nsew")
-        self.table["columns"] = (
-            "description",
-            "modification",
-            "expiration",
-            "extension",
-            "label",
-        )
+       
 
         self.table_style = ttk.Style()
         self.table_style.theme_use("default")
@@ -156,6 +150,15 @@ class FileManager(ctk.CTk):
         self.table_style.map(style="Treeview", background=[("selected", "#3C8CD4")])
 
         # Columns and headings
+        self.table["columns"] = (
+            "description",
+            "modification",
+            "expiration",
+            "extension",
+            "label",
+        )
+        self.table["show"] = "headings"
+
         self.table.column("#0", width=0, stretch=False)
         self.table.heading("#0", text="", anchor="w")
 
