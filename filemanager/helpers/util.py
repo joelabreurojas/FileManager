@@ -9,6 +9,7 @@ import pendulum
 from ..models.entities import File
 from ..models.exceptions import FileNotValid
 
+STORAGE = Path.cwd() / "filemanager" / "static" / ".storage"
 
 def decompose_file(file: str) -> Tuple[str, str]:
     description = Path(file).stem
@@ -77,7 +78,7 @@ def expired_file(file: File) -> bool:
 
 def copy_file(file: str, new_name: str) -> None:
     source = Path(file)
-    destination = Path(__file__).parent.parent / "static" / ".storage"
+    destination = STORAGE
 
     shutil.copy(source, destination)
 
@@ -85,17 +86,17 @@ def copy_file(file: str, new_name: str) -> None:
 
 
 def open_file(file: str) -> None:
-    destination = Path(__file__).parent.parent / "static" / ".storage" / file
+    destination = STORAGE / file
     subprocess.Popen([destination], shell=True)
 
 
 def rename_file(file: str, new_name: str) -> None:
-    path = Path(__file__).parent.parent / "static" / ".storage" / file
+    path = STORAGE / file
     path.rename(path.with_name(new_name))
 
 
 def delete_file(file: str) -> None:
-    destination = Path(__file__).parent.parent / "static" / ".storage" / file
+    destination = STORAGE / file
     if destination.exists():
         destination.unlink()
 
@@ -105,7 +106,7 @@ def generate_backup(folder: Optional[str] = None) -> None:
 
     path = __folder_path(folder)
 
-    source = Path(__file__).parent.parent / "static" / ".storage"
+    source = STORAGE
     destiny = __folder_name(path / "Backups" / date)
 
     shutil.copytree(source, destiny)

@@ -1,9 +1,9 @@
 import sqlite3
 from contextlib import contextmanager
 from typing import Any, Dict, Iterator, List, Optional
+from pathlib import Path
 
-DB_PATH = r"filemanager/database/documents.db"
-
+DATABASE = Path.cwd() / "filemanager" / "database" / "documents.db"
 
 def fetch_lastrow_id(query: str, parameters: Dict[str, str]) -> Optional[int]:
     with __get_cursor() as cursor:
@@ -36,7 +36,7 @@ def fetch_none(query: str, parameters: Optional[Dict[str, Any]] = None) -> None:
 
 @contextmanager
 def __get_cursor() -> Iterator[sqlite3.Cursor]:
-    connection: sqlite3.Connection = sqlite3.connect(DB_PATH)
+    connection: sqlite3.Connection = sqlite3.connect(DATABASE)
     cursor: sqlite3.Cursor = connection.cursor()
     try:
         yield cursor
