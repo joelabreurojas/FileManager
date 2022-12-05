@@ -252,6 +252,7 @@ class FileManager(ctk.CTk):
 
         window = EntryWindow()
         window.title("New file")
+        window.transient(self)
         window.description_entry.insert(0, description)
         window.accept_button.configure(
             command=lambda: [
@@ -268,6 +269,8 @@ class FileManager(ctk.CTk):
                 self.update_table(file_controller.lists()),
             ]
         )
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", self.alarm)
 
     def window_open(self):
         selected = self.table.focus()
@@ -280,6 +283,7 @@ class FileManager(ctk.CTk):
 
         window = NotificationWindow()
         window.title("Open file")
+        window.transient(self)
         window.label.configure(text=f"Are you sure to open {file}?")
         window.accept_button.configure(
             command=lambda: [
@@ -287,6 +291,8 @@ class FileManager(ctk.CTk):
                 window.destroy(),
             ]
         )
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", self.alarm)
 
     def window_edit(self):
         selected = self.table.focus()
@@ -302,6 +308,7 @@ class FileManager(ctk.CTk):
 
         window = EntryWindow()
         window.title("Edit file")
+        window.transient(self)
         window.description_entry.insert(0, description)
         window.label_entry.insert(0, label)
         window.accept_button.configure(
@@ -323,7 +330,8 @@ class FileManager(ctk.CTk):
                 self.update_table(file_controller.lists()),
             ]
         )
-
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", self.alarm)
         if expiration[0] and expiration[1] and expiration[2]:
             window.year_combobox.set(expiration[0])
             window.month_combobox.set(expiration[1])
@@ -340,6 +348,7 @@ class FileManager(ctk.CTk):
 
         window = NotificationWindow()
         window.title("Delete file")
+        window.transient(self)
         window.label.configure(text=f"Are you sure to delete {file}?")
         window.accept_button.configure(
             command=lambda: [
@@ -353,6 +362,8 @@ class FileManager(ctk.CTk):
                 self.update_table(file_controller.lists()),
             ]
         )
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", self.alarm)
 
     def search_description(self, e):
         file = File(description=self.entry_search.get())
@@ -371,6 +382,9 @@ class FileManager(ctk.CTk):
 
         if path:
             util.generate_backup(path)
+
+    def alarm(self, e):
+        self.attributes("-disabled", 0)
 
     def report_callback_exception(self, exc, val, tb):
         messagebox.showerror(type(val).__name__, message=str(val))
