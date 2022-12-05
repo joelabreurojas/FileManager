@@ -205,6 +205,7 @@ class FileManager(ctk.CTk):
         self.table.configure(
             xscrollcommand=self.scroll_x.set, yscrollcommand=self.scroll_y.set
         )
+        self.table.bind("<Escape>", self.clear_selection)
 
     def update_table(self, data: List[File]) -> None:
         for record in self.table.get_children():
@@ -273,11 +274,11 @@ class FileManager(ctk.CTk):
         window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def window_open(self):
+        if not self.table.selection():
+            return None
+
         selected = self.table.focus()
         values = self.table.item(selected, "values")
-
-        if not values:
-            return None
 
         file = f"{values[0]}.{values[3].lower()}"
 
@@ -295,11 +296,11 @@ class FileManager(ctk.CTk):
         window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def window_edit(self):
+        if not self.table.selection():
+            return None
+
         selected = self.table.focus()
         values = self.table.item(selected, "values")
-
-        if not values:
-            return None
 
         description = values[0]
         expiration = values[2].split("/")
@@ -338,11 +339,11 @@ class FileManager(ctk.CTk):
             window.day_combobox.set(expiration[2])
 
     def window_delete(self):
+        if not self.table.selection():
+            return None
+
         selected = self.table.focus()
         values = self.table.item(selected, "values")
-
-        if not values:
-            return None
 
         file = f"{values[0]}.{values[3].lower()}"
 
@@ -382,6 +383,10 @@ class FileManager(ctk.CTk):
 
         if path:
             util.generate_backup(path)
+
+    def clear_selection(self, e):
+        for element in self.table.selection():
+            self.table.selection_remove(element)
 
     def report_callback_exception(self, exc, val, tb):
         messagebox.showerror(type(val).__name__, message=str(val))
