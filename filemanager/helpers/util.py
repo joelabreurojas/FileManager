@@ -3,12 +3,13 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import List, Optional, Tuple
-
+import os
 import pendulum
 
 from ..models.entities import File
 from ..models.exceptions import FileNotValid
 
+DATABASE = Path.cwd() / "filemanager" / "database" / "documents.db"
 STORAGE = Path.cwd() / "filemanager" / "static" / ".storage"
 
 def decompose_file(file: str) -> Tuple[str, str]:
@@ -113,6 +114,12 @@ def generate_backup(folder: Optional[str] = None) -> None:
 
     Path(destiny / "no_delete.jpg").unlink()
 
+
+def create_database() -> None:
+    DATABASE.touch()
+    STORAGE.mkdir(parents=True, exist_ok=True)
+
+    os.system(f"attrib +h {STORAGE}")
 
 def __format_date(format: str) -> str:
     dt = pendulum.now()
