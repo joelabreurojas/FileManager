@@ -270,7 +270,7 @@ class FileManager(ctk.CTk):
             ]
         )
         self.attributes("-disabled", 1)
-        window.bind("<Destroy>", self.alarm)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def window_open(self):
         selected = self.table.focus()
@@ -292,7 +292,7 @@ class FileManager(ctk.CTk):
             ]
         )
         self.attributes("-disabled", 1)
-        window.bind("<Destroy>", self.alarm)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def window_edit(self):
         selected = self.table.focus()
@@ -331,7 +331,7 @@ class FileManager(ctk.CTk):
             ]
         )
         self.attributes("-disabled", 1)
-        window.bind("<Destroy>", self.alarm)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
         if expiration[0] and expiration[1] and expiration[2]:
             window.year_combobox.set(expiration[0])
             window.month_combobox.set(expiration[1])
@@ -363,7 +363,7 @@ class FileManager(ctk.CTk):
             ]
         )
         self.attributes("-disabled", 1)
-        window.bind("<Destroy>", self.alarm)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def search_description(self, e):
         file = File(description=self.entry_search.get())
@@ -382,9 +382,6 @@ class FileManager(ctk.CTk):
 
         if path:
             util.generate_backup(path)
-
-    def alarm(self, e):
-        self.attributes("-disabled", 0)
 
     def report_callback_exception(self, exc, val, tb):
         messagebox.showerror(type(val).__name__, message=str(val))
