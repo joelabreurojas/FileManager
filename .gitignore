@@ -4,7 +4,7 @@ __pycache__/
 
 # Local
 filemanager/static/.storage/
-filemanager/static/database/documents.db
+filemanager/database/documents.db
 
 # Environment
 env/
