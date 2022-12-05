@@ -9,10 +9,13 @@ Desktop application that handles the management of documents in digital format, 
 **1). Create a virtual environment:**
 * `python -m venv env`
 
-**2). Install the necessary packages:**
+**2). Activate the virtual environment:**
+* `env\Scripts\activate`
+
+**3). Install the necessary packages:**
 * `pip install -r requirements.txt`
 
-**3). Run:**
+**4). Run:**
 * `python run.py` or `python -m filemanager`
 
 <br/>
