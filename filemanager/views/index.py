@@ -138,7 +138,6 @@ class FileManager(ctk.CTk):
         # Table section
         self.table = ttk.Treeview(self.table_frame, selectmode="browse")
         self.table.grid(row=0, column=0, sticky="nsew")
-       
 
         self.table_style = ttk.Style()
         self.table_style.theme_use("default")
@@ -374,4 +373,4 @@ class FileManager(ctk.CTk):
             util.generate_backup(path)
 
     def report_callback_exception(self, exc, val, tb):
-        messagebox.showerror("Error", message=str(val))
+        messagebox.showerror(type(val).__name__, message=str(val))
