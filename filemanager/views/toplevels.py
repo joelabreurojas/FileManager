@@ -61,6 +61,10 @@ class EntryWindow(ctk.CTkToplevel):
         self.label_entry.grid(row=4, column=3, sticky="ew", padx=5)
         self.accept_button.grid(row=5, column=0, columnspan=5, pady=20)
 
+        # Bindings
+        self.bind("<Escape>", lambda e: self.destroy())
+        self.bind("<Return>", lambda e: self.accept_button.command())
+
 
 class NotificationWindow(ctk.CTkToplevel):
     def __init__(self):
@@ -86,3 +90,7 @@ class NotificationWindow(ctk.CTkToplevel):
 
         self.label.grid(row=0, column=0, pady=10)
         self.accept_button.grid(row=1, column=0)
+
+        # Bindings
+        self.bind("<Escape>", lambda e: self.destroy())
+        self.bind("<Return>", lambda e: self.accept_button.command())

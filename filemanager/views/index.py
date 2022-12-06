@@ -57,7 +57,7 @@ class FileManager(ctk.CTk):
         self.elements = (
             ctk.CTkButton(
                 self.options_frame,
-                image=self.new_image("create"),
+                image=self.new_image("add"),
                 command=self.window_add,
             ),
             ctk.CTkButton(
@@ -98,7 +98,7 @@ class FileManager(ctk.CTk):
                 self.entry_search = element
                 self.entry_search.configure(width=350)
                 self.entry_search.grid(row=0, column=self.count, padx=10)
-                self.entry_search.bind("<Return>", self.search_description)
+                self.entry_search.bind("<Return>", lambda e: self.search_description)
                 self.entry_search.focus_get()
 
             # Buttons
@@ -142,17 +142,16 @@ class FileManager(ctk.CTk):
             self.table.column(element, anchor="w", minwidth=80, width=0)
             self.table.heading(element, text=element.capitalize())
 
-            if element != "description":
+            self.table.heading(
+                f"{element}",
+                command=lambda element=element: self.sort_column(f"{element}", False),
+            )
+            if element == "description":
                 self.table.heading(
                     f"{element}",
                     command=lambda element=element: self.sort_column(
                         f"{element}", True
                     ),
-                )
-            else:
-                self.table.heading(
-                    f"{element}",
-                    command=lambda element=element: self.sort_column(f"{element}"),
                 )
 
         self.table.tag_configure("gray", background="#E26D5C")
@@ -174,7 +173,15 @@ class FileManager(ctk.CTk):
         self.table.configure(
             xscrollcommand=self.scroll_x.set, yscrollcommand=self.scroll_y.set
         )
-        self.table.bind("<Escape>", self.clear_selection)
+
+        # Bindings
+        self.bind("<Escape>", lambda e: self.clear_selection())
+        self.bind("1", lambda e: self.window_add())
+        self.bind("2", lambda e: self.window_open())
+        self.bind("3", lambda e: self.window_edit())
+        self.bind("4", lambda e: self.window_delete())
+        self.bind("5", lambda e: self.switch_appearance())
+        self.bind("6", lambda e: self.generate_backup())
 
     def new_image(self, name: str) -> ImageTk.PhotoImage:
         return ImageTk.PhotoImage(
@@ -200,11 +207,7 @@ class FileManager(ctk.CTk):
             )
 
     def sort_column(self, col: str, reverse: bool) -> None:
-        column_index = self.table["columns"].index(col)
-        l = [
-            (str(self.table.item(k)["values"][column_index]), k)
-            for k in self.table.get_children()
-        ]
+        l = [(self.table.set(k, col), k) for k in self.table.get_children("")]
         l.sort(key=lambda t: t[0], reverse=reverse)
 
         for index, (_, k) in enumerate(l):
@@ -355,12 +358,12 @@ class FileManager(ctk.CTk):
         if path:
             util.generate_backup(path)
 
-    def search_description(self, e):
+    def search_description(self):
         file = File(description=self.entry_search.get())
         data = file_controller.details(file)
         self.update_table(data)
 
-    def clear_selection(self, e):
+    def clear_selection(self):
         for element in self.table.selection():
             self.table.selection_remove(element)
 
