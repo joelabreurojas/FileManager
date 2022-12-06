@@ -91,6 +91,11 @@ def open_file(file: str) -> None:
     subprocess.Popen([destination], shell=True)
 
 
+def rename_file(file: str, new_name: str) -> None:
+    path = STORAGE / file
+    path.rename(path.with_name(new_name))
+
+
 def delete_file(file: str) -> None:
     destination = STORAGE / file
     if destination.exists():
