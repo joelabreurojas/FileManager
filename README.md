@@ -2,7 +2,11 @@
 
 Desktop application that handles the management of documents in digital format, thanks to the implementation of a user-friendly interface that allows the automation of CRUD instructions on a relational database.
 
-<br/>
+<p align="center">
+    <picture>
+        <img src="filemanager/static/assets/banner.png"/>
+    </picture>
+</p>
 
 ## How to use
 
@@ -24,9 +28,9 @@ Desktop application that handles the management of documents in digital format, 
 
 <p align="center">
     <picture>
-        <img src="filemanager/static/preview/Screenshot_1.png" width="800"/>
+        <img src="filemanager/static/assets/screenshot_1.png" width="800" />
     </picture>
     <picture>
-        <img src="filemanager/static/preview/Screenshot_2.png" width="800"/>
+        <img src="filemanager/static/assets/screenshot_2.png" width="800" />
     </picture>
 </p>
