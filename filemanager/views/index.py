@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 from ..controller import file_controller
 from ..helpers import util
 from ..models.entities import File
-from .toplevels import EntryWindow, NotificationWindow
+from ..views.toplevels import EntryWindow, NotificationWindow
 
 FAVICON = Path.cwd() / "filemanager" / "static" / "img" / "favicon.ico"
 
@@ -51,64 +51,41 @@ class FileManager(ctk.CTk):
         self.table_frame.grid_columnconfigure(0, weight=1)
         self.table_frame.grid_rowconfigure(0, weight=1)
 
-        # Images
-        self.image_path = Path(__file__).parent.parent / "static" / "img"
-        self.image_create = ImageTk.PhotoImage(
-            Image.open(Path(self.image_path) / "create.png").resize(
-                (35, 35), Image.ANTIALIAS
-            )
-        )
-        self.image_open = ImageTk.PhotoImage(
-            Image.open(Path(self.image_path) / "open.png").resize(
-                (35, 35), Image.ANTIALIAS
-            )
-        )
-        self.image_edit = ImageTk.PhotoImage(
-            Image.open(Path(self.image_path) / "edit.png").resize(
-                (35, 35), Image.ANTIALIAS
-            )
-        )
-        self.image_delete = ImageTk.PhotoImage(
-            Image.open(Path(self.image_path) / "delete.png").resize(
-                (35, 35), Image.ANTIALIAS
-            )
-        )
-        self.image_appearance = ImageTk.PhotoImage(
-            Image.open(Path(self.image_path) / "appearance.png").resize(
-                (35, 35), Image.ANTIALIAS
-            )
-        )
-        self.image_backup = ImageTk.PhotoImage(
-            Image.open(Path(self.image_path) / "backup.png").resize(
-                (35, 35), Image.ANTIALIAS
-            )
-        )
-
         # Options section
+        self.image_path = Path(__file__).parent.parent / "static" / "img"
+
         self.elements = (
             ctk.CTkButton(
-                self.options_frame, image=self.image_create, command=self.window_add
+                self.options_frame,
+                image=self.new_image("create"),
+                command=self.window_add,
             ),
             ctk.CTkButton(
-                self.options_frame, image=self.image_open, command=self.window_open
+                self.options_frame,
+                image=self.new_image("open"),
+                command=self.window_open,
             ),
             ctk.CTkButton(
-                self.options_frame, image=self.image_edit, command=self.window_edit
+                self.options_frame,
+                image=self.new_image("edit"),
+                command=self.window_edit,
             ),
             ctk.CTkButton(
-                self.options_frame, image=self.image_delete, command=self.window_delete
+                self.options_frame,
+                image=self.new_image("delete"),
+                command=self.window_delete,
             ),
             ctk.CTkEntry(
                 self.options_frame, placeholder_text="Search by description..."
             ),
             ctk.CTkButton(
                 self.options_frame,
-                image=self.image_appearance,
+                image=self.new_image("appearance"),
                 command=self.switch_appearance,
             ),
             ctk.CTkButton(
                 self.options_frame,
-                image=self.image_backup,
+                image=self.new_image("backup"),
                 command=self.generate_backup,
             ),
         )
@@ -165,26 +142,18 @@ class FileManager(ctk.CTk):
             self.table.column(element, anchor="w", minwidth=80, width=0)
             self.table.heading(element, text=element.capitalize())
 
-        self.table.heading(
-            "description",
-            command=lambda: self.sort_column("description", True),
-        )
-        self.table.heading(
-            "modification",
-            command=lambda: self.sort_column("modification"),
-        )
-        self.table.heading(
-            "expiration",
-            command=lambda: self.sort_column("expiration"),
-        )
-        self.table.heading(
-            "extension",
-            command=lambda: self.sort_column("extension"),
-        )
-        self.table.heading(
-            "label",
-            command=lambda: self.sort_column("label"),
-        )
+            if element != "description":
+                self.table.heading(
+                    f"{element}",
+                    command=lambda element=element: self.sort_column(
+                        f"{element}", True
+                    ),
+                )
+            else:
+                self.table.heading(
+                    f"{element}",
+                    command=lambda element=element: self.sort_column(f"{element}"),
+                )
 
         self.table.tag_configure("gray", background="#E26D5C")
         self.table.tag_configure("red", background="#E0E1DD")
@@ -207,6 +176,13 @@ class FileManager(ctk.CTk):
         )
         self.table.bind("<Escape>", self.clear_selection)
 
+    def new_image(self, name: str) -> ImageTk.PhotoImage:
+        return ImageTk.PhotoImage(
+            Image.open(Path(self.image_path) / f"{name}.png").resize(
+                (35, 35), Image.ANTIALIAS
+            )
+        )
+
     def update_table(self, data: List[File]) -> None:
         for record in self.table.get_children():
             self.table.delete(record)
@@ -223,7 +199,7 @@ class FileManager(ctk.CTk):
                 tags=tag,
             )
 
-    def sort_column(self, col: str, reverse: bool = False) -> None:
+    def sort_column(self, col: str, reverse: bool) -> None:
         column_index = self.table["columns"].index(col)
         l = [
             (str(self.table.item(k)["values"][column_index]), k)
@@ -366,11 +342,6 @@ class FileManager(ctk.CTk):
         self.attributes("-disabled", 1)
         window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
-    def search_description(self, e):
-        file = File(description=self.entry_search.get())
-        data = file_controller.details(file)
-        self.update_table(data)
-
     def switch_appearance(self):
         mode = ctk.get_appearance_mode()
         if mode == "Light":
@@ -383,6 +354,11 @@ class FileManager(ctk.CTk):
 
         if path:
             util.generate_backup(path)
+
+    def search_description(self, e):
+        file = File(description=self.entry_search.get())
+        data = file_controller.details(file)
+        self.update_table(data)
 
     def clear_selection(self, e):
         for element in self.table.selection():
