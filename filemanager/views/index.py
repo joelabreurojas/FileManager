@@ -32,16 +32,16 @@ class FileManager(ctk.CTk):
         self.background_frame = ctk.CTkFrame(self)
         self.background_frame.pack(side="top", fill="both", expand=True)
 
-        self.cointainer_frame = ctk.CTkFrame(self.background_frame)
-        self.cointainer_frame.pack(side="top", fill="both", expand=True)
-        self.cointainer_frame.grid_columnconfigure(0, weight=1)
-        self.cointainer_frame.grid_rowconfigure(1, weight=1)
+        self.container_frame = ctk.CTkFrame(self.background_frame)
+        self.container_frame.pack(side="top", fill="both", expand=True)
+        self.container_frame.grid_columnconfigure(0, weight=1)
+        self.container_frame.grid_rowconfigure(1, weight=1)
 
-        self.options_frame = ctk.CTkFrame(self.cointainer_frame)
+        self.options_frame = ctk.CTkFrame(self.container_frame)
         self.options_frame.grid(row=0, column=0, sticky="n", padx=10, pady=10)
         self.options_frame.columnconfigure(4, weight=2)
 
-        self.table_container_frame = ctk.CTkFrame(self.cointainer_frame)
+        self.table_container_frame = ctk.CTkFrame(self.container_frame)
         self.table_container_frame.grid(
             row=1, column=0, sticky="nsew", padx=10, pady=10
         )
@@ -98,7 +98,7 @@ class FileManager(ctk.CTk):
                 self.entry_search = element
                 self.entry_search.configure(width=350)
                 self.entry_search.grid(row=0, column=self.count, padx=10)
-                self.entry_search.bind("<Return>", lambda e: self.search_description)
+                self.entry_search.bind("<Return>", lambda e: self.search_description())
                 self.entry_search.focus_get()
 
             # Buttons
@@ -158,6 +158,7 @@ class FileManager(ctk.CTk):
         self.table.tag_configure("red", background="#E0E1DD")
 
         self.update_table(file_controller.lists())
+        self.bind("<Escape>", lambda e: self.clear_selection())
 
         # Scrolls
         self.scroll_x = ctk.CTkScrollbar(
@@ -173,15 +174,6 @@ class FileManager(ctk.CTk):
         self.table.configure(
             xscrollcommand=self.scroll_x.set, yscrollcommand=self.scroll_y.set
         )
-
-        # Bindings
-        self.bind("<Escape>", lambda e: self.clear_selection())
-        self.bind("1", lambda e: self.window_add())
-        self.bind("2", lambda e: self.window_open())
-        self.bind("3", lambda e: self.window_edit())
-        self.bind("4", lambda e: self.window_delete())
-        self.bind("5", lambda e: self.switch_appearance())
-        self.bind("6", lambda e: self.generate_backup())
 
     def new_image(self, name: str) -> ImageTk.PhotoImage:
         return ImageTk.PhotoImage(
