@@ -1,3 +1,4 @@
+import os
 import re
 import shutil
 import subprocess
@@ -7,9 +8,11 @@ from typing import List, Optional, Tuple
 import pendulum
 
 from ..models.entities import File
-from ..models.exceptions import FileNotValid
+from ..models.exceptions import FileNotFound, FileNotValid
 
+DATABASE = Path.cwd() / "filemanager" / "database" / "documents.db"
 STORAGE = Path.cwd() / "filemanager" / "static" / ".storage"
+
 
 def decompose_file(file: str) -> Tuple[str, str]:
     description = Path(file).stem
@@ -102,6 +105,9 @@ def delete_file(file: str) -> None:
 
 
 def generate_backup(folder: Optional[str] = None) -> None:
+    if not any(STORAGE.iterdir()):
+        raise FileNotFound("No stored files found")
+
     date = __format_date("Y_M_D")
 
     path = __folder_path(folder)
@@ -111,7 +117,12 @@ def generate_backup(folder: Optional[str] = None) -> None:
 
     shutil.copytree(source, destiny)
 
-    Path(destiny / "no_delete.jpg").unlink()
+
+def create_database() -> None:
+    DATABASE.touch()
+    STORAGE.mkdir(parents=True, exist_ok=True)
+
+    os.system(f"attrib +h {STORAGE}")
 
 
 def __format_date(format: str) -> str:

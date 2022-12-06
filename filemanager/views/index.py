@@ -138,7 +138,6 @@ class FileManager(ctk.CTk):
         # Table section
         self.table = ttk.Treeview(self.table_frame, selectmode="browse")
         self.table.grid(row=0, column=0, sticky="nsew")
-       
 
         self.table_style = ttk.Style()
         self.table_style.theme_use("default")
@@ -206,6 +205,7 @@ class FileManager(ctk.CTk):
         self.table.configure(
             xscrollcommand=self.scroll_x.set, yscrollcommand=self.scroll_y.set
         )
+        self.table.bind("<Escape>", self.clear_selection)
 
     def update_table(self, data: List[File]) -> None:
         for record in self.table.get_children():
@@ -253,6 +253,7 @@ class FileManager(ctk.CTk):
 
         window = EntryWindow()
         window.title("New file")
+        window.transient(self)
         window.description_entry.insert(0, description)
         window.accept_button.configure(
             command=lambda: [
@@ -269,18 +270,21 @@ class FileManager(ctk.CTk):
                 self.update_table(file_controller.lists()),
             ]
         )
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def window_open(self):
+        if not self.table.selection():
+            return None
+
         selected = self.table.focus()
         values = self.table.item(selected, "values")
-
-        if not values:
-            return None
 
         file = f"{values[0]}.{values[3].lower()}"
 
         window = NotificationWindow()
         window.title("Open file")
+        window.transient(self)
         window.label.configure(text=f"Are you sure to open {file}?")
         window.accept_button.configure(
             command=lambda: [
@@ -288,13 +292,15 @@ class FileManager(ctk.CTk):
                 window.destroy(),
             ]
         )
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def window_edit(self):
+        if not self.table.selection():
+            return None
+
         selected = self.table.focus()
         values = self.table.item(selected, "values")
-
-        if not values:
-            return None
 
         description = values[0]
         expiration = values[2].split("/")
@@ -303,6 +309,7 @@ class FileManager(ctk.CTk):
 
         window = EntryWindow()
         window.title("Edit file")
+        window.transient(self)
         window.description_entry.insert(0, description)
         window.label_combobox.set(label)
         window.accept_button.configure(
@@ -324,23 +331,25 @@ class FileManager(ctk.CTk):
                 self.update_table(file_controller.lists()),
             ]
         )
-
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
         if expiration[0] and expiration[1] and expiration[2]:
             window.year_combobox.set(expiration[0])
             window.month_combobox.set(expiration[1])
             window.day_combobox.set(expiration[2])
 
     def window_delete(self):
+        if not self.table.selection():
+            return None
+
         selected = self.table.focus()
         values = self.table.item(selected, "values")
-
-        if not values:
-            return None
 
         file = f"{values[0]}.{values[3].lower()}"
 
         window = NotificationWindow()
         window.title("Delete file")
+        window.transient(self)
         window.label.configure(text=f"Are you sure to delete {file}?")
         window.accept_button.configure(
             command=lambda: [
@@ -354,6 +363,8 @@ class FileManager(ctk.CTk):
                 self.update_table(file_controller.lists()),
             ]
         )
+        self.attributes("-disabled", 1)
+        window.bind("<Destroy>", lambda event: self.attributes("-disabled", 0))
 
     def search_description(self, e):
         file = File(description=self.entry_search.get())
@@ -373,5 +384,9 @@ class FileManager(ctk.CTk):
         if path:
             util.generate_backup(path)
 
+    def clear_selection(self, e):
+        for element in self.table.selection():
+            self.table.selection_remove(element)
+
     def report_callback_exception(self, exc, val, tb):
-        messagebox.showerror("Error", message=str(val))
+        messagebox.showerror(type(val).__name__, message=str(val))

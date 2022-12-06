@@ -27,3 +27,7 @@ def details(file: File) -> List[File]:
 
 def delete(file: File) -> File:
     return file_db.delete(file)
+
+def reset() -> None:
+    util.create_database()
+    file_db.reset_table()
