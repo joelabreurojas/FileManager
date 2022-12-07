@@ -219,10 +219,10 @@ class FileManager(ctk.CTk):
         if not path:
             return None
 
-        data = util.decompose_file(path)
+        values = util.decompose_file(path)
 
-        description = data[0]
-        extension = data[1]
+        description = util.replace_text(values[0])
+        extension = values[1]
 
         window = EntryWindow()
         window.title("New file")
