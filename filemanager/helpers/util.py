@@ -83,9 +83,7 @@ def copy_file(file: str, new_name: str) -> None:
     source = Path(file)
     destination = STORAGE
 
-    shutil.copy(source, destination)
-
-    rename_file(source.name, new_name)
+    shutil.copy(source, destination / new_name)
 
 
 def open_file(file: str) -> None:
