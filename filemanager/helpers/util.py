@@ -58,8 +58,8 @@ def generate_dates() -> Tuple[List[str], List[str], List[str]]:
     init_year = pendulum.now().year
 
     year = [str(i) for i in range(init_year, init_year + 11)]
-    month = [str(i) for i in range(1, 13)]
-    day = [str(i) for i in range(1, 32)]
+    month = [str(i) if i >= 10 else f"0{i}" for i in range(1, 13)]
+    day = [str(i) if i >= 10 else f"0{i}" for i in range(1, 32)]
 
     return year, month, day
 
