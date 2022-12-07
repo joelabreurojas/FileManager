@@ -141,18 +141,10 @@ class FileManager(ctk.CTk):
         for element in self.table["columns"]:
             self.table.column(element, anchor="w", minwidth=80, width=0)
             self.table.heading(element, text=element.capitalize())
-
             self.table.heading(
                 f"{element}",
-                command=lambda element=element: self.sort_column(f"{element}", False),
+                command=lambda e=element: self.sort_column(f"{e}"),
             )
-            if element == "description":
-                self.table.heading(
-                    f"{element}",
-                    command=lambda element=element: self.sort_column(
-                        f"{element}", True
-                    ),
-                )
 
         self.table.tag_configure("gray", background="#E26D5C")
         self.table.tag_configure("red", background="#E0E1DD")
@@ -198,7 +190,7 @@ class FileManager(ctk.CTk):
                 tags=tag,
             )
 
-    def sort_column(self, col: str, reverse: bool) -> None:
+    def sort_column(self, col: str, reverse: bool = False) -> None:
         l = [(self.table.set(k, col), k) for k in self.table.get_children("")]
         l.sort(key=lambda t: t[0], reverse=reverse)
 
