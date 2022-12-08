@@ -42,7 +42,7 @@ def validate_file(file: File) -> None:
             The description "{file.description}" is not valid
             
             Indentifier rules :
-            - Only alphanumeric values (a-Z, 0-9) and underscore (_)
+            - Only lowercase letters (a-z), numbers (0-9) and underscore (_)
             - The first digit cannot be a number
             """
         )
@@ -54,12 +54,17 @@ def validate_file(file: File) -> None:
         raise FileNotValid(f"The expiration '{file.expiration}' is not valid")
 
 
+def replace_text(text: str) -> str:
+    text = re.sub(r"[^a-zA-Z0-9]", "", text)
+    return text.lower()
+
+
 def generate_dates() -> Tuple[List[str], List[str], List[str]]:
     init_year = pendulum.now().year
 
     year = [str(i) for i in range(init_year, init_year + 11)]
-    month = [str(i) for i in range(1, 13)]
-    day = [str(i) for i in range(1, 32)]
+    month = [str(i) if i >= 10 else f"0{i}" for i in range(1, 13)]
+    day = [str(i) if i >= 10 else f"0{i}" for i in range(1, 32)]
 
     return year, month, day
 
@@ -133,7 +138,7 @@ def __valid_text(text: Optional[str]) -> bool:
     if not isinstance(text, str):
         return False
 
-    regex = r"^[a-zA-Z_][\w]*$"
+    regex = r"^[a-z_][a-z_0-9]*$"
 
     return bool(re.search(regex, text))
 

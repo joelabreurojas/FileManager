@@ -54,7 +54,7 @@ class FileManager(ctk.CTk):
         # Options section
         self.image_path = Path(__file__).parent.parent / "static" / "img"
 
-        self.elements = (
+        self.options = (
             ctk.CTkButton(
                 self.options_frame,
                 image=self.new_image("add"),
@@ -91,11 +91,11 @@ class FileManager(ctk.CTk):
         )
 
         self.count = 0
-        for element in self.elements:
+        for option in self.options:
 
             # Entry
             if self.count == 4:
-                self.entry_search = element
+                self.entry_search = option
                 self.entry_search.configure(width=350)
                 self.entry_search.grid(row=0, column=self.count, padx=10)
                 self.entry_search.bind("<Return>", lambda e: self.search_description())
@@ -103,12 +103,12 @@ class FileManager(ctk.CTk):
 
             # Buttons
             elif self.count % 2 == 0:
-                element.configure(text="", width=50, height=50)
-                element.grid(row=0, column=self.count, pady=5, padx=5)
+                option.configure(text="", width=50, height=50)
+                option.grid(row=0, column=self.count, pady=5, padx=5)
 
             else:
-                element.configure(text="", width=50, height=50)
-                element.grid(row=0, column=self.count, pady=5)
+                option.configure(text="", width=50, height=50)
+                option.grid(row=0, column=self.count, pady=5)
 
             self.count += 1
 
@@ -138,13 +138,9 @@ class FileManager(ctk.CTk):
         self.table.column("#0", width=0, stretch=False)
         self.table.heading("#0", text="", anchor="w")
 
-        for element in self.table["columns"]:
-            self.table.column(element, anchor="w", minwidth=80, width=0)
-            self.table.heading(element, text=element.capitalize())
-            self.table.heading(
-                f"{element}",
-                command=lambda e=element: self.sort_column(f"{e}"),
-            )
+        for col in self.table["columns"]:
+            self.table.column(col, anchor="w", minwidth=80, width=0)
+            self.table.heading(col, command=lambda e=col: self.sort_column(f"{e}"))
 
         self.table.tag_configure("gray", background="#E26D5C")
         self.table.tag_configure("red", background="#E0E1DD")
@@ -190,14 +186,28 @@ class FileManager(ctk.CTk):
                 tags=tag,
             )
 
+        for col_ in self.table["columns"]:
+            self.table.heading(col_, text=col_.capitalize())
+
+        self.sort_column("description")
+
     def sort_column(self, col: str, reverse: bool = False) -> None:
-        l = [(self.table.set(k, col), k) for k in self.table.get_children("")]
+        l = [(self.table.set(k, col).lower(), k) for k in self.table.get_children("")]
+
         l.sort(key=lambda t: t[0], reverse=reverse)
 
         for index, (_, k) in enumerate(l):
             self.table.move(k, "", index)
 
-        self.table.heading(col, command=lambda: self.sort_column(col, not reverse))
+        for col_ in self.table["columns"]:
+            self.table.heading(col_, text=col_.capitalize())
+
+        reference = "⌄" if reverse else "^"
+        self.table.heading(
+            col,
+            text=f"{col.capitalize()} ({reference})",
+            command=lambda: self.sort_column(col, not reverse),
+        )
 
     def window_add(self) -> None:
         path = filedialog.askopenfilename(
@@ -209,10 +219,10 @@ class FileManager(ctk.CTk):
         if not path:
             return None
 
-        data = util.decompose_file(path)
+        values = util.decompose_file(path)
 
-        description = data[0]
-        extension = data[1]
+        description = util.replace_text(values[0])
+        extension = values[1]
 
         window = EntryWindow()
         window.title("New file")
