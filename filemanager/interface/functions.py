@@ -84,7 +84,7 @@ def window_add(table: ttk.Treeview, root: ctk.CTk) -> None:
                     description=window.description_entry.get(),
                     extension=extension,
                     expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
-                    label=window.label_entry.get(),
+                    label=window.label_combobox.get(),
                 )
             ),
             util.copy_file(path, f"{window.description_entry.get()}{extension}"),
@@ -135,7 +135,7 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
     window.title("Edit file")
     window.transient(root)
     window.description_entry.insert(0, description)
-    window.label_entry.insert(0, label)
+    window.label_combobox.set(label)
     window.accept_button.configure(
         command=lambda: [
             file_controller.update(
@@ -144,7 +144,7 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
                     description=window.description_entry.get(),
                     expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
                     extension=values[3],
-                    label=window.label_entry.get(),
+                    label=window.label_combobox.get(),
                 )
             ),
             util.rename_file(
