@@ -23,8 +23,7 @@ class NotificationWindow(ctk.CTkToplevel):
 
         self.label = ctk.CTkLabel(self)
         self.accept_button = ctk.CTkButton(
-            self,
-            text="Accept",
+            self, text="Accept", font=ctk.CTkFont(weight="bold")
         )
 
         self.label.grid(row=0, column=0, pady=10)

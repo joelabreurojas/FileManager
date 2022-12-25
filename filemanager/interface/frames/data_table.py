@@ -52,9 +52,7 @@ class DataTable(ctk.CTkFrame):
         )
         self.scroll_x.grid(row=1, column=0, sticky="sew")
 
-        self.scroll_y = ctk.CTkScrollbar(
-            self, orientation="vertical", command=self.table.yview
-        )
+        self.scroll_y = ctk.CTkScrollbar(self, command=self.table.yview)
         self.scroll_y.grid(row=0, column=1, sticky="nse")
 
         self.table.configure(

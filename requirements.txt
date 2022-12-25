@@ -1,5 +1,5 @@
-customtkinter==4.6.0
-darkdetect==0.7.1
+customtkinter==5.0.3
+darkdetect==0.8.0
 pendulum==2.1.2
 Pillow==9.3.0
 python-dateutil==2.8.2
