@@ -3,7 +3,7 @@ from tkinter import filedialog, messagebox, ttk
 from typing import List
 
 import customtkinter as ctk
-from PIL import Image, ImageTk
+from PIL import Image
 
 from ..controller import file_controller
 from ..helpers import util
@@ -11,12 +11,10 @@ from ..models.entities import File
 from .toplevels import EntryWindow, NotificationWindow
 
 
-def new_image(name: str) -> ImageTk.PhotoImage:
+def new_image(name: str) -> ctk.CTkImage:
     image_path = Path.cwd() / "filemanager" / "static" / "img"
 
-    return ImageTk.PhotoImage(
-        Image.open(Path(image_path) / f"{name}.png").resize((35, 35), Image.ANTIALIAS)
-    )
+    return ctk.CTkImage(Image.open(Path(image_path) / f"{name}.png"), size=(30, 30))
 
 
 def update_table(table: ttk.Treeview, data: List[File]) -> None:

@@ -34,6 +34,7 @@ class EntryWindow(ctk.CTkToplevel):
         )
         self.day_combobox = ctk.CTkComboBox(self, width=52, values=[""] + self.dates[2])
 
+<<<<<<< HEAD
         for element in [self.year_combobox, self.month_combobox, self.day_combobox]:
             element.configure(
                 fg_color="#D3D3D3",
@@ -44,9 +45,15 @@ class EntryWindow(ctk.CTkToplevel):
 
         self.label_combobox = ctk.CTkComboBox(
             self, width=180, values=["", "Agreements", "Resolutions"]
+=======
+        self.label_entry = ctk.CTkEntry(
+            self, width=180, placeholder_text="Keyword, type file, etc..."
+>>>>>>> origin/develop
         )
-        self.accept_button = ctk.CTkButton(self, text="Accept")
         self.label = ctk.CTkLabel(self, text="Label - (Optional)")
+        self.accept_button = ctk.CTkButton(
+            self, text="Accept", font=ctk.CTkFont(weight="bold")
+        )
 
         self.description_label.grid(row=0, column=0, columnspan=5, pady=10)
         self.expiration_label.grid(row=2, column=0, columnspan=3)
