@@ -135,7 +135,15 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
     window.title("Edit file")
     window.transient(root)
     window.description_entry.insert(0, description)
-    window.label_entry.insert(0, label)
+
+    if expiration[0] and expiration[1] and expiration[2]:
+        window.year_combobox.set(expiration[0])
+        window.month_combobox.set(expiration[1])
+        window.day_combobox.set(expiration[2])
+
+    if label:
+        window.label_entry.insert(0, label)
+
     window.accept_button.configure(
         command=lambda: [
             file_controller.update(
@@ -157,10 +165,6 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
     )
     root.attributes("-disabled", 1)
     window.bind("<Destroy>", lambda event: root.attributes("-disabled", 0))
-    if expiration[0] and expiration[1] and expiration[2]:
-        window.year_combobox.set(expiration[0])
-        window.month_combobox.set(expiration[1])
-        window.day_combobox.set(expiration[2])
 
 
 def window_delete(table: ttk.Treeview, root: ctk.CTk):

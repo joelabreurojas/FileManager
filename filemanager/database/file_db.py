@@ -1,7 +1,7 @@
 from typing import Any, List
 
 from ..models.entities import File
-from ..models.exceptions import FileAlreadyExists, FileNotFound
+from ..models.exceptions import FileAlreadyExists
 from .connection import fetch_all, fetch_lastrow_id, fetch_none, fetch_one
 
 
@@ -26,8 +26,6 @@ def create(file: File) -> File:
 def list_all() -> List[File]:
     query = "SELECT oid, * FROM documents ORDER BY description"
     records = fetch_all(query)
-    if records is None:
-        raise FileNotFound("No files in database")
 
     return __package_files(records)
 
@@ -37,8 +35,6 @@ def detail(file: File) -> List[File]:
     parameters = f"%{file.description}%"
 
     records = fetch_all(query, parameters)
-    if records is None:
-        raise FileNotFound(f"No file with description: {file.description}")
 
     return __package_files(records)
 

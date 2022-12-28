@@ -70,7 +70,7 @@ def generate_dates() -> Tuple[List[str], List[str], List[str]]:
 
 
 def expired_file(file: File) -> bool:
-    if not isinstance(file.expiration, str) or not file.expiration:
+    if not file.expiration:
         return False
 
     date = file.expiration.split("/")
@@ -89,6 +89,7 @@ def copy_file(file: str, new_name: str) -> None:
     destination = STORAGE
 
     shutil.copy(source, destination / new_name)
+    os.system(f"attrib +h +s {destination / new_name}")
 
 
 def open_file(file: str) -> None:
@@ -107,16 +108,14 @@ def delete_file(file: str) -> None:
         destination.unlink()
 
 
-def generate_backup(folder: Optional[str] = None) -> None:
+def generate_backup(folder: str) -> None:
     if not any(STORAGE.iterdir()):
         raise FileNotFound("No stored files found")
 
     date = __format_date("Y_M_D")
 
-    path = __folder_path(folder)
-
     source = STORAGE
-    destiny = __folder_name(path / "Backups" / date)
+    destiny = __folder_name(Path(folder) / "Backups" / date)
 
     shutil.copytree(source, destiny)
 
@@ -125,7 +124,7 @@ def create_database() -> None:
     DATABASE.touch()
     STORAGE.mkdir(parents=True, exist_ok=True)
 
-    os.system(f"attrib +h {STORAGE}")
+    os.system(f"attrib +h +s {STORAGE}")
 
 
 def __format_date(format: str) -> str:
@@ -148,13 +147,6 @@ def __valid_date(date: Optional[str]) -> bool:
         return True
 
     return bool(8 <= len(date) <= 10)
-
-
-def __folder_path(folder: Optional[str] = None) -> Path:
-    if folder:
-        return Path(folder)
-
-    return Path().home() / "Desktop"
 
 
 def __folder_name(path: Path) -> Path:
