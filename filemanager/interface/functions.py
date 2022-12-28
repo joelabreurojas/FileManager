@@ -104,6 +104,7 @@ def window_open(table: ttk.Treeview, root: ctk.CTk):
     values = table.item(selected, "values")
 
     file = f"{values[0]}.{values[3].lower()}"
+    file = util.limit_text(file)
 
     window = NotificationWindow()
     window.title("Open file")
@@ -175,6 +176,7 @@ def window_delete(table: ttk.Treeview, root: ctk.CTk):
     values = table.item(selected, "values")
 
     file = f"{values[0]}.{values[3].lower()}"
+    file = util.limit_text(file)
 
     window = NotificationWindow()
     window.title("Delete file")

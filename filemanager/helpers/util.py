@@ -59,6 +59,15 @@ def replace_text(text: str) -> str:
     return text.lower()
 
 
+def limit_text(text: str) -> str:
+    limit = 25
+
+    if len(text) > limit:
+        text = text[0:limit] + "..."
+
+    return text
+
+
 def generate_dates() -> Tuple[List[str], List[str], List[str]]:
     init_year = pendulum.now().year
 
