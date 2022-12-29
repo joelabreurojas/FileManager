@@ -18,43 +18,49 @@ def new_image(name: str) -> ctk.CTkImage:
 
 
 def update_table(table: ttk.Treeview, data: List[File]) -> None:
-    for record in table.get_children():
-        table.delete(record)
+    for child in table.get_children():
+        table.delete(child)
 
-    for record in data:
-        tag = "gray" if util.expired_file(File(expiration=record[3])) else "red"
+    for file in data:
+        tag = "gray" if util.expired_file(File(expiration=file.expiration)) else "red"
 
         table.insert(
             parent="",
             index="end",
-            iid=str(record[0]),
+            iid=str(file.id),
             text="",
-            values=(record[1], record[2], record[3], record[4], record[5]),
+            values=(
+                file.description,
+                file.modification,
+                file.expiration,
+                file.extension,
+                file.label,
+            ),
             tags=tag,
         )
 
-    for col_ in table["columns"]:
-        table.heading(col_, text=col_.capitalize())
+    for column in table["columns"]:
+        table.heading(column, text=column.capitalize())
 
     sort_column(table, "description")
 
 
-def sort_column(table: ttk.Treeview, col: str, reverse: bool = False) -> None:
-    l = [(table.set(k, col).lower(), k) for k in table.get_children("")]
+def sort_column(table: ttk.Treeview, column: str, reverse: bool = False) -> None:
+    data = [(table.set(k, column).lower(), k) for k in table.get_children("")]
 
-    l.sort(key=lambda t: t[0], reverse=reverse)
+    data.sort(key=lambda t: t[0], reverse=reverse)
 
-    for index, (_, k) in enumerate(l):
-        table.move(k, "", index)
+    for index, (_, child) in enumerate(data):
+        table.move(child, "", index)
 
-    for col_ in table["columns"]:
-        table.heading(col_, text=col_.capitalize())
+    for _column in table["columns"]:
+        table.heading(_column, text=_column.capitalize())
 
     reference = "⌄" if reverse else "^"
     table.heading(
-        col,
-        text=f"{col.capitalize()} ({reference})",
-        command=lambda: sort_column(table, col, not reverse),
+        column,
+        text=f"{column.capitalize()} ({reference})",
+        command=lambda: sort_column(table, column, not reverse),
     )
 
 
@@ -104,12 +110,11 @@ def window_open(table: ttk.Treeview, root: ctk.CTk):
     values = table.item(selected, "values")
 
     file = f"{values[0]}.{values[3].lower()}"
-    file = util.limit_text(file)
 
     window = NotificationWindow()
     window.title("Open file")
     window.transient(root)
-    window.label.configure(text=f"Are you sure to open {file}?")
+    window.label.configure(text=f"Are you sure to open {util.limit_text(file)}?")
     window.accept_button.configure(
         command=lambda: [
             util.open_file(file),
@@ -132,6 +137,8 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
     extension = values[3]
     label = values[4]
 
+    file = f"{description}.{extension.lower()}"
+
     window = EntryWindow()
     window.title("Edit file")
     window.transient(root)
@@ -147,18 +154,18 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
 
     window.accept_button.configure(
         command=lambda: [
+            util.verify_file(file),
             file_controller.update(
                 File(
                     id=int(selected),
                     description=window.description_entry.get(),
                     expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
-                    extension=values[3],
+                    extension=extension,
                     label=window.label_entry.get(),
                 )
             ),
             util.rename_file(
-                f"{description}.{extension.lower()}",
-                f"{window.description_entry.get()}.{extension.lower()}",
+                file, f"{window.description_entry.get()}.{extension.lower()}"
             ),
             window.destroy(),
             update_table(table, file_controller.lists()),
@@ -176,14 +183,14 @@ def window_delete(table: ttk.Treeview, root: ctk.CTk):
     values = table.item(selected, "values")
 
     file = f"{values[0]}.{values[3].lower()}"
-    file = util.limit_text(file)
 
     window = NotificationWindow()
     window.title("Delete file")
     window.transient(root)
-    window.label.configure(text=f"Are you sure to delete {file}?")
+    window.label.configure(text=f"Are you sure to delete {util.limit_text(file)}?")
     window.accept_button.configure(
         command=lambda: [
+            # util.verify_file(file),
             file_controller.delete(
                 File(
                     id=int(selected),
@@ -220,8 +227,8 @@ def search_description(table: ttk.Treeview, entry_search: ctk.CTkEntry):
 
 
 def clear_selection(table: ttk.Treeview):
-    for element in table.selection():
-        table.selection_remove(element)
+    for selected in table.selection():
+        table.selection_remove(selected)
 
 
 def report_callback_exception(self, exc, val, tb):

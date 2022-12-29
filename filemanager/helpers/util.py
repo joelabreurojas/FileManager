@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 import pendulum
 
 from ..models.entities import File
-from ..models.exceptions import FileNotFound, FileNotValid
+from ..models.exceptions import FileAlreadyUse, FileNotFound, FileNotValid
 
 DATABASE = Path.cwd() / "filemanager" / "database" / "documents.db"
 STORAGE = Path.cwd() / "filemanager" / "static" / ".storage"
@@ -102,8 +102,17 @@ def copy_file(file: str, new_name: str) -> None:
 
 
 def open_file(file: str) -> None:
-    destination = STORAGE / file
-    subprocess.Popen([destination], shell=True)
+    path = STORAGE / file
+    subprocess.Popen([path], shell=True)
+
+
+def verify_file(file: str) -> None:
+    try:
+        rename_file(file, f".{file}")
+        rename_file(f".{file}", file)
+
+    except:
+        raise FileAlreadyUse(f"The file '{file}' is being used by another process.")
 
 
 def rename_file(file: str, new_name: str) -> None:
@@ -112,9 +121,9 @@ def rename_file(file: str, new_name: str) -> None:
 
 
 def delete_file(file: str) -> None:
-    destination = STORAGE / file
-    if destination.exists():
-        destination.unlink()
+    path = STORAGE / file
+    if path.exists():
+        path.unlink()
 
 
 def generate_backup(folder: str) -> None:
