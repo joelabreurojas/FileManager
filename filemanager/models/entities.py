@@ -1,10 +1,10 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 
 class File(NamedTuple):
-    id: int = 0
-    description: str = ""
-    modification: str = ""
-    expiration: str = ""
-    extension: str = ""
-    label: str = ""
+    id: Optional[int] = None
+    description: Optional[str] = None
+    modification: Optional[str] = None
+    expiration: Optional[str] = None
+    extension: Optional[str] = None
+    label: Optional[str] = None

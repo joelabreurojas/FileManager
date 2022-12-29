@@ -190,7 +190,7 @@ def window_delete(table: ttk.Treeview, root: ctk.CTk):
     window.label.configure(text=f"Are you sure to delete {util.limit_text(file)}?")
     window.accept_button.configure(
         command=lambda: [
-            # util.verify_file(file),
+            util.verify_file(file),
             file_controller.delete(
                 File(
                     id=int(selected),

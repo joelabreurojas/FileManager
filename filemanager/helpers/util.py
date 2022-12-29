@@ -3,7 +3,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import pendulum
 
@@ -21,6 +21,9 @@ def decompose_file(file: str) -> Tuple[str, str]:
 
 
 def format_file(file: File) -> File:
+    if not isinstance(file.extension, str) or not file.extension:
+        return file
+
     file_dict = (file)._asdict()
 
     file_dict["extension"] = file.extension.replace(".", "").upper()
@@ -43,6 +46,9 @@ def validate_file(file: File) -> None:
             - The first digit cannot be a number
             """
         )
+
+    if not isinstance(file.extension, str) or not file.extension:
+        raise FileNotValid(f"The extension '{file.extension}' is not valid")
 
     if not __valid_date(file.expiration):
         raise FileNotValid(f"The expiration '{file.expiration}' is not valid")
@@ -142,17 +148,20 @@ def create_database() -> None:
 def __format_date(format: str) -> str:
     dt = pendulum.now()
 
-    return dt.format(format)  # type: ignore
+    return dt.format(format)
 
 
-def __valid_text(text: str) -> bool:
+def __valid_text(text: Optional[str]) -> bool:
+    if not isinstance(text, str):
+        return False
+
     regex = r"^[a-z_][a-z_0-9]*$"
 
     return bool(re.search(regex, text))
 
 
-def __valid_date(date_: str) -> bool:
-    if not date_:
+def __valid_date(date_: Optional[str]) -> bool:
+    if not isinstance(date_, str) or not date_:
         return True
 
     date = date_.split("/")
