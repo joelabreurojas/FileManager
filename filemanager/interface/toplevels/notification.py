@@ -1,3 +1,5 @@
+"""External window for notification"""
+
 from pathlib import Path
 
 import customtkinter as ctk
@@ -9,6 +11,8 @@ FAVICON = Path.cwd() / "filemanager" / "static" / "img" / "favicon.ico"
 
 
 class NotificationWindow(ctk.CTkToplevel):
+    """Defining the open and delete window"""
+
     def __init__(self):
         super().__init__()
 

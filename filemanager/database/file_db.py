@@ -1,3 +1,5 @@
+"""Database management for the documents table"""
+
 from typing import Any, List
 
 from ..models.entities import File
@@ -6,6 +8,8 @@ from .connection import fetch_all, fetch_none, fetch_one
 
 
 def create(file: File) -> None:
+    """Create a new file"""
+
     if __file_exists("description", file.description):  # type: ignore
         raise FileAlreadyExists(f"Description '{file.description}' is already used")
 
@@ -19,6 +23,8 @@ def create(file: File) -> None:
 
 
 def list_all() -> List[File]:
+    """Return all files in the table"""
+
     query = "SELECT oid, * FROM documents ORDER BY description"
     records = fetch_all(query)
 
@@ -26,6 +32,8 @@ def list_all() -> List[File]:
 
 
 def detail(file: File) -> List[File]:
+    """Returns all files that match with the description"""
+
     query = "SELECT oid, * FROM documents WHERE description LIKE ?"
     parameters = f"%{file.description}%"
 
@@ -35,6 +43,8 @@ def detail(file: File) -> List[File]:
 
 
 def update(file: File) -> None:
+    """Update data of a selected file"""
+
     query = """
         UPDATE documents
         SET description = :description, modification = :modification, expiration = :expiration, label = :label
@@ -46,12 +56,16 @@ def update(file: File) -> None:
 
 
 def delete(file: File) -> None:
+    """Delete a selected file"""
+
     query = "DELETE FROM documents WHERE oid = :id"
     parameters = file._asdict()
     fetch_none(query, parameters)
 
 
 def reset_table() -> None:
+    """Re-create the document table, if it already exists, delete it"""
+
     query = "DROP TABLE IF EXISTS documents"
     fetch_none(query)
 
@@ -61,6 +75,8 @@ def reset_table() -> None:
 
 
 def __file_exists(field: str, value: str) -> bool:
+    """Check if a parameter exists"""
+
     query = f"SELECT oid, description from documents WHERE {field}=?"
     parameters = value
 
@@ -70,6 +86,8 @@ def __file_exists(field: str, value: str) -> bool:
 
 
 def __package_files(records: List[Any]) -> List[File]:
+    """Receives a list of data and returns it in a list of objects"""
+
     files: List[File] = list()
 
     for record in records:

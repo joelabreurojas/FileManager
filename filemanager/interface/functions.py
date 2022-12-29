@@ -12,17 +12,20 @@ from .toplevels import EntryWindow, NotificationWindow
 
 
 def new_image(name: str) -> ctk.CTkImage:
-    image_path = Path.cwd() / "filemanager" / "static" / "img"
+    """Automatize image filling"""
 
+    image_path = Path.cwd() / "filemanager" / "static" / "img"
     return ctk.CTkImage(Image.open(Path(image_path) / f"{name}.png"), size=(30, 30))
 
 
 def update_table(table: ttk.Treeview, data: List[File]) -> None:
+    """Remove and display the data in a table"""
+
     for child in table.get_children():
         table.delete(child)
 
     for file in data:
-        tag = "gray" if util.expired_file(file.expiration) else "red"
+        tag = "gray" if util.expired_file(file) else "red"
 
         table.insert(
             parent="",
@@ -46,12 +49,14 @@ def update_table(table: ttk.Treeview, data: List[File]) -> None:
 
 
 def sort_column(table: ttk.Treeview, column_: str, reverse: bool = False) -> None:
-    data = [(table.set(k, column_).lower(), k) for k in table.get_children("")]
+    """Sort in ascending or descending order a table according to a column"""
 
-    data.sort(key=lambda t: t[0], reverse=reverse)
+    data = [(table.set(item, column_).lower(), item) for item in table.get_children("")]
 
-    for index, (_, child) in enumerate(data):
-        table.move(child, "", index)
+    data.sort(key=lambda e: e[0], reverse=reverse)
+
+    for index, (_, item) in enumerate(data):
+        table.move(item, "", index)
 
     for column in table["columns"]:
         table.heading(column, text=column.capitalize())
@@ -65,24 +70,25 @@ def sort_column(table: ttk.Treeview, column_: str, reverse: bool = False) -> Non
 
 
 def window_add(table: ttk.Treeview, root: ctk.CTk) -> None:
-    path = filedialog.askopenfilename(
+    """Show add file window"""
+
+    filename = filedialog.askopenfilename(
         initialdir="",
         title="Select file",
         filetypes=(("pdf files", ".pdf"), ("all files", ".*")),
     )
 
-    if not path:
+    if not filename:
         return None
 
-    values = util.decompose_file(path)
-
-    description = util.replace_text(values[0])
+    values = util.decompose_file(filename)
+    description = values[0]
     extension = values[1]
 
     window = EntryWindow()
     window.title("New file")
     window.transient(root)
-    window.description_entry.insert(0, description)
+    window.description_entry.insert(0, util.replace_text(description))
     window.accept_button.configure(
         command=lambda: [
             file_controller.create(
@@ -91,9 +97,9 @@ def window_add(table: ttk.Treeview, root: ctk.CTk) -> None:
                     extension=extension,
                     expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
                     label=window.label_entry.get(),
-                )
+                    path=filename,
+                ),
             ),
-            util.copy_file(path, f"{window.description_entry.get()}{extension}"),
             window.destroy(),
             update_table(table, file_controller.lists()),
         ]
@@ -103,21 +109,26 @@ def window_add(table: ttk.Treeview, root: ctk.CTk) -> None:
 
 
 def window_open(table: ttk.Treeview, root: ctk.CTk):
+    """Open file confirmation window"""
+
     if not table.selection():
         return None
 
     selected = table.focus()
     values = table.item(selected, "values")
-
-    file = f"{values[0]}.{values[3].lower()}"
+    description = values[0]
+    extension = values[3]
+    filename = f"{description}.{extension.lower()}"
 
     window = NotificationWindow()
     window.title("Open file")
     window.transient(root)
-    window.label.configure(text=f"Are you sure to open {util.limit_text(file)}?")
+    window.label.configure(text=f"Are you sure to open {util.limit_text(filename)}?")
     window.accept_button.configure(
         command=lambda: [
-            util.open_file(file),
+            file_controller.open(
+                File(description=description, extension=extension, path=filename)
+            ),
             window.destroy(),
         ]
     )
@@ -126,18 +137,18 @@ def window_open(table: ttk.Treeview, root: ctk.CTk):
 
 
 def window_edit(table: ttk.Treeview, root: ctk.CTk):
+    """Show edit file window"""
+
     if not table.selection():
         return None
 
     selected = table.focus()
     values = table.item(selected, "values")
-
     description = values[0]
     expiration = values[2].split("/")
     extension = values[3]
     label = values[4]
-
-    file = f"{description}.{extension.lower()}"
+    filename = f"{description}.{extension.lower()}"
 
     window = EntryWindow()
     window.title("Edit file")
@@ -154,7 +165,6 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
 
     window.accept_button.configure(
         command=lambda: [
-            util.verify_file(file),
             file_controller.update(
                 File(
                     id=int(selected),
@@ -162,10 +172,8 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
                     expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
                     extension=extension,
                     label=window.label_entry.get(),
+                    path=filename,
                 )
-            ),
-            util.rename_file(
-                file, f"{window.description_entry.get()}.{extension.lower()}"
             ),
             window.destroy(),
             update_table(table, file_controller.lists()),
@@ -176,27 +184,31 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
 
 
 def window_delete(table: ttk.Treeview, root: ctk.CTk):
+    """Show delete file confirmation window"""
+
     if not table.selection():
         return None
 
     selected = table.focus()
     values = table.item(selected, "values")
-
-    file = f"{values[0]}.{values[3].lower()}"
+    description = values[0]
+    extension = values[3]
+    filename = f"{description}.{extension.lower()}"
 
     window = NotificationWindow()
     window.title("Delete file")
     window.transient(root)
-    window.label.configure(text=f"Are you sure to delete {util.limit_text(file)}?")
+    window.label.configure(text=f"Are you sure to delete {util.limit_text(filename)}?")
     window.accept_button.configure(
         command=lambda: [
-            util.verify_file(file),
             file_controller.delete(
                 File(
                     id=int(selected),
+                    description=description,
+                    extension=extension,
+                    path=filename,
                 )
             ),
-            util.delete_file(file),
             window.destroy(),
             update_table(table, file_controller.lists()),
         ]
@@ -206,6 +218,8 @@ def window_delete(table: ttk.Treeview, root: ctk.CTk):
 
 
 def switch_appearance():
+    """Change the style of the application between ligth and dark mode"""
+
     mode = ctk.get_appearance_mode()
     if mode == "Light":
         ctk.set_appearance_mode("Dark")
@@ -214,22 +228,28 @@ def switch_appearance():
 
 
 def generate_backup():
-    path = filedialog.askdirectory()
+    """Request a route to generate the backup"""
 
-    if path:
-        util.generate_backup(path)
+    directory = filedialog.askdirectory()
+    file_controller.backup(File(path=directory))
 
 
 def search_description(table: ttk.Treeview, entry_search: ctk.CTkEntry):
+    """Displays the results most similar to the description received"""
+
     file = File(description=entry_search.get())
     data_ = file_controller.details(file)
     update_table(table, data_)
 
 
 def clear_selection(table: ttk.Treeview):
+    """Deselect a row in case of having one"""
+
     for selected in table.selection():
         table.selection_remove(selected)
 
 
 def report_callback_exception(self, exc, val, tb):
+    """Show the error notification window"""
+
     messagebox.showerror(type(val).__name__, message=str(val))

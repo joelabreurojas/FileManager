@@ -1,3 +1,5 @@
+"""External window to enter data"""
+
 from pathlib import Path
 
 import customtkinter as ctk
@@ -10,6 +12,8 @@ FAVICON = Path.cwd() / "filemanager" / "static" / "img" / "favicon.ico"
 
 
 class EntryWindow(ctk.CTkToplevel):
+    """Defining the add and edit window"""
+
     def __init__(self):
         super().__init__()
 

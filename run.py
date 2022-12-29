@@ -1,3 +1,5 @@
+"""Main way to start the application, with: python run.py"""
+
 from filemanager import create_app
 
 if __name__ == "__main__":

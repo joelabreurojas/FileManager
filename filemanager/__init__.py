@@ -1,3 +1,5 @@
+"""Process instantiation module"""
+
 import ctypes
 
 from .controller import file_controller
@@ -6,6 +8,8 @@ from .interface.root import FileManager
 
 
 def create_app():
+    """Verify data and instantiates the application with a customised icon"""
+
     if not (util.DATABASE.exists() and util.STORAGE.exists()):
         file_controller.reset()
 
