@@ -78,8 +78,8 @@ def generate_dates() -> Tuple[List[str], List[str], List[str]]:
     return year, month, day
 
 
-def expired_file(expiration: str) -> bool:
-    if not expiration:
+def expired_file(expiration: Optional[str]) -> bool:
+    if not isinstance(expiration, str) or not expiration:
         return False
 
     date = expiration.split("/")
