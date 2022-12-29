@@ -30,5 +30,5 @@ def delete(file: File) -> None:
 
 
 def reset() -> None:
-    util.create_database()
+    util.reset_database()
     file_db.reset_table()

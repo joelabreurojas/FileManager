@@ -138,7 +138,15 @@ def generate_backup(folder: str) -> None:
     shutil.copytree(source, destiny)
 
 
-def create_database() -> None:
+def reset_database() -> None:
+    if DATABASE.exists():
+        DATABASE.unlink()
+
+    if STORAGE.exists():
+        for file in STORAGE.iterdir():
+            file.unlink()
+        STORAGE.rmdir()
+
     DATABASE.touch()
     STORAGE.mkdir(parents=True, exist_ok=True)
 
