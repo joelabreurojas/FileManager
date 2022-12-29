@@ -4,12 +4,6 @@ from typing import Any, Dict, Iterator, List, Optional
 from ..helpers import util
 
 
-def fetch_lastrow_id(query: str, parameters: Dict[str, str]) -> Optional[int]:
-    with __get_cursor() as cursor:
-        cursor.execute(query, parameters)
-        return cursor.lastrowid
-
-
 def fetch_all(query: str, parameters: Optional[Any] = None) -> List[Any]:
     with __get_cursor() as cursor:
         if parameters is None:

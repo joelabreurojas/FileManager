@@ -2,10 +2,10 @@ from typing import Any, List
 
 from ..models.entities import File
 from ..models.exceptions import FileAlreadyExists
-from .connection import fetch_all, fetch_lastrow_id, fetch_none, fetch_one
+from .connection import fetch_all, fetch_none, fetch_one
 
 
-def create(file: File) -> File:
+def create(file: File) -> None:
     if __file_exists("description", file.description):  # type: ignore
         raise FileAlreadyExists(f"Description '{file.description}' is already used")
 
@@ -15,12 +15,7 @@ def create(file: File) -> File:
         """
 
     parameters = file._asdict()
-
-    id = fetch_lastrow_id(query, parameters)
-
-    parameters["id"] = id
-
-    return File(**parameters)
+    fetch_none(query, parameters)
 
 
 def list_all() -> List[File]:
@@ -39,7 +34,7 @@ def detail(file: File) -> List[File]:
     return __package_files(records)
 
 
-def update(file: File) -> File:
+def update(file: File) -> None:
     query = """
         UPDATE documents
         SET description = :description, modification = :modification, expiration = :expiration, label = :label
@@ -49,15 +44,11 @@ def update(file: File) -> File:
     parameters = file._asdict()
     fetch_none(query, parameters)
 
-    return file
 
-
-def delete(file: File) -> File:
+def delete(file: File) -> None:
     query = "DELETE FROM documents WHERE oid = :id"
     parameters = file._asdict()
     fetch_none(query, parameters)
-
-    return file
 
 
 def reset_table() -> None:
