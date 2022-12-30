@@ -19,7 +19,7 @@ class FileManager(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
 
-        ctk.CTk.report_callback_exception = functions.report_callback_exception
+        # ctk.CTk.report_callback_exception = functions.report_callback_exception
 
         X = (self.winfo_screenwidth() / 2) - (WIDTH / 2)
         Y = (self.winfo_screenheight() / 2) - (HEIGHT / 2)

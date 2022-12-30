@@ -25,8 +25,6 @@ def update_table(table: ttk.Treeview, data: List[File]) -> None:
         table.delete(child)
 
     for file in data:
-        tag = "gray" if util.expired_file(file) else "red"
-
         table.insert(
             parent="",
             index="end",
@@ -35,11 +33,9 @@ def update_table(table: ttk.Treeview, data: List[File]) -> None:
             values=(
                 file.description,
                 file.modification,
-                file.expiration,
                 file.extension,
                 file.label,
             ),
-            tags=tag,
         )
 
     for column in table["columns"]:
@@ -95,7 +91,6 @@ def window_add(table: ttk.Treeview, root: ctk.CTk) -> None:
                 File(
                     description=window.description_entry.get(),
                     extension=extension,
-                    expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
                     label=window.label_combobox.get(),
                     path=filename,
                 ),
@@ -117,7 +112,7 @@ def window_open(table: ttk.Treeview, root: ctk.CTk):
     selected = table.focus()
     values = table.item(selected, "values")
     description = values[0]
-    extension = values[3]
+    extension = values[2]
     filename = f"{description}.{extension.lower()}"
 
     window = NotificationWindow()
@@ -145,20 +140,14 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
     selected = table.focus()
     values = table.item(selected, "values")
     description = values[0]
-    expiration = values[2].split("/")
-    extension = values[3]
-    label = values[4]
+    extension = values[2]
+    label = values[3]
     filename = f"{description}.{extension.lower()}"
 
     window = EntryWindow()
     window.title("Edit file")
     window.transient(root)
     window.description_entry.insert(0, description)
-
-    if expiration[0] and expiration[1] and expiration[2]:
-        window.year_combobox.set(expiration[0])
-        window.month_combobox.set(expiration[1])
-        window.day_combobox.set(expiration[2])
 
     if label:
         window.label_combobox.set(label)
@@ -169,7 +158,6 @@ def window_edit(table: ttk.Treeview, root: ctk.CTk):
                 File(
                     id=int(selected),
                     description=window.description_entry.get(),
-                    expiration=f"{window.year_combobox.get()}/{window.month_combobox.get()}/{window.day_combobox.get()}",
                     extension=extension,
                     label=window.label_combobox.get(),
                     path=filename,
@@ -192,7 +180,7 @@ def window_delete(table: ttk.Treeview, root: ctk.CTk):
     selected = table.focus()
     values = table.item(selected, "values")
     description = values[0]
-    extension = values[3]
+    extension = values[2]
     filename = f"{description}.{extension.lower()}"
 
     window = NotificationWindow()

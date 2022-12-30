@@ -15,7 +15,7 @@ def create(file: File) -> None:
 
     query = """
         INSERT INTO documents
-        VALUES (:description, :modification, :expiration, :extension, :label)
+        VALUES (:description, :modification, :extension, :label)
         """
 
     parameters = file._asdict()
@@ -47,7 +47,7 @@ def update(file: File) -> None:
 
     query = """
         UPDATE documents
-        SET description = :description, modification = :modification, expiration = :expiration, label = :label
+        SET description = :description, modification = :modification, label = :label
         WHERE oid = :id
         """
 
@@ -69,7 +69,7 @@ def reset_table() -> None:
     query = "DROP TABLE IF EXISTS documents"
     fetch_none(query)
 
-    fields = "(description text, modification text, expiration text, extension text, label text)"
+    fields = "(description text, modification text, extension text, label text)"
     query = f"CREATE TABLE IF NOT EXISTS documents {fields}"
     fetch_none(query)
 
@@ -95,9 +95,8 @@ def __package_files(records: List[Any]) -> List[File]:
             id=record[0],
             description=record[1],
             modification=record[2],
-            expiration=record[3],
-            extension=record[4],
-            label=record[5],
+            extension=record[3],
+            label=record[4],
         )
         files.append(file)
 

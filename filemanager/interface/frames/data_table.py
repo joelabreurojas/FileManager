@@ -22,6 +22,7 @@ class DataTable(ctk.CTkFrame):
         self.table_style.configure(
             style="Treeview",
             rowheight=20,
+            background="#E0E1DD",
             fieldbackground="#C8C4C4",
         )
         self.table_style.map(style="Treeview", background=[("selected", "#3C8CD4")])
@@ -30,7 +31,6 @@ class DataTable(ctk.CTkFrame):
         self.table["columns"] = (
             "description",
             "modification",
-            "expiration",
             "extension",
             "label",
         )
@@ -44,9 +44,6 @@ class DataTable(ctk.CTkFrame):
             self.table.heading(
                 col, command=lambda e=col: functions.sort_column(self.table, f"{e}")
             )
-
-        self.table.tag_configure("gray", background="#E26D5C")
-        self.table.tag_configure("red", background="#E0E1DD")
 
         functions.update_table(self.table, file_controller.lists())
 

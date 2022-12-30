@@ -16,23 +16,6 @@ DATABASE = Path.cwd() / "filemanager" / "database" / "documents.db"
 STORAGE = Path.cwd() / "filemanager" / "database" / ".storage"
 
 
-def expired_file(file: File) -> bool:
-    """Check if a file is expired"""
-
-    if not file.expiration:
-        return False
-
-    date = f"{file.expiration}".split("/")
-
-    year = int(date[0])
-    month = int(date[1])
-    day = int(date[2])
-
-    expiration_date = pendulum.datetime(year, month, day)
-    actual_date = pendulum.now()
-    return expiration_date <= actual_date
-
-
 def decompose_file(file: str) -> Tuple[str, str]:
     """From a file, filter out the description and extension"""
 
@@ -46,18 +29,6 @@ def replace_text(text: str) -> str:
 
     text = re.sub(r"[^a-zA-Z0-9]", "", text)
     return text.lower()
-
-
-def generate_dates() -> Tuple[List[str], List[str], List[str]]:
-    """Sets valid options as expiry dates"""
-
-    init_year = pendulum.now().year
-
-    year = [str(i) for i in range(init_year, init_year + 11)]
-    month = [str(i) if i >= 10 else f"0{i}" for i in range(1, 13)]
-    day = [str(i) if i >= 10 else f"0{i}" for i in range(1, 32)]
-
-    return year, month, day
 
 
 def limit_text(text: str) -> str:
@@ -108,9 +79,6 @@ def validate_file(file: File) -> None:
     if not isinstance(file.extension, str) or not file.extension:
         raise FileNotValid(f"The extension '{file.extension}' is not valid")
 
-    if not __valid_date(file.expiration):
-        raise FileNotValid(f"The expiration '{file.expiration}' is not valid")
-
 
 def format_file(file: File) -> File:
     """Establishes the format to be used for the data in the files"""
@@ -119,9 +87,6 @@ def format_file(file: File) -> File:
 
     file_dict["extension"] = file_dict["extension"].replace(".", "").upper()
     file_dict["modification"] = __format_date(r"YYYY/MM/DD LT")
-
-    if file.expiration == "//":
-        file_dict["expiration"] = ""
 
     return File(**file_dict)
 
@@ -197,19 +162,6 @@ def __valid_text(text: Optional[str]) -> bool:
     regex = r"^[a-z_][a-z_0-9]*$"
 
     return bool(re.search(regex, text))
-
-
-def __valid_date(date_: Optional[str]) -> bool:
-    """Checks if the date complies with the parameters"""
-
-    if not isinstance(date_, str):
-        return False
-
-    date = date_.split("/")
-    empty = bool(not date[0] and not date[1] and not date[2])
-    full = bool(date[0] and date[1] and date[2])
-
-    return empty or full
 
 
 def __format_date(format: str) -> str:
