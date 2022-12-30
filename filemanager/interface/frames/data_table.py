@@ -1,3 +1,5 @@
+"""Internal frame, grandson of root"""
+
 from tkinter import ttk
 
 import customtkinter as ctk
@@ -7,6 +9,8 @@ from .. import functions
 
 
 class DataTable(ctk.CTkFrame):
+    """Definition of the elements related to the file table section"""
+
     def __init__(self, parent: ctk.CTkFrame) -> None:
         super().__init__(parent)
 

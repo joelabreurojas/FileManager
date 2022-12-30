@@ -1,9 +1,13 @@
+"""Internal frame, grandson of root"""
+
 import customtkinter as ctk
 
 from .. import functions
 
 
 class OptionsBar(ctk.CTkFrame):
+    """Definition of the elements related to the option section"""
+
     def __init__(self, parent: ctk.CTkFrame, root: ctk.CTk) -> None:
         super().__init__(parent)
 

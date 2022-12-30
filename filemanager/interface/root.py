@@ -1,3 +1,5 @@
+"""Main screen of the application"""
+
 from pathlib import Path
 
 import customtkinter as ctk
@@ -12,6 +14,8 @@ FAVICON = Path.cwd() / "filemanager" / "static" / "img" / "favicon.ico"
 
 
 class FileManager(ctk.CTk):
+    """Defines the file management frames to use"""
+
     def __init__(self) -> None:
         super().__init__()
 

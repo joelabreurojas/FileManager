@@ -1,4 +1,11 @@
+""""Structures oriented to the transmission of custom errors"""
+
+
 class FileAlreadyExists(Exception):
+    pass
+
+
+class FileAlreadyUsed(Exception):
     pass
 
 
