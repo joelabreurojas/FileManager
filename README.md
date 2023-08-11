@@ -8,7 +8,7 @@ Desktop application that handles the management of documents in digital format, 
     </picture>
 </p>
 
-## How to use
+## How to use (Only works in Windows, for now...)
 
 **1). Create a virtual environment:**
 * `python -m venv env`
